@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/widgets.dart';
 import 'package:pokedex/models/Pokemons.dart';
 import 'package:pokedex/pages/Pokemon.dart';
 import 'package:pokedex/functions.dart';
+import 'package:pokedex/constants.dart';
+import 'package:select_dialog/select_dialog.dart';
 
 class HomePage extends State<PokemonsList>{
 	ScrollController _controller = ScrollController(initialScrollOffset: 0.0, keepScrollOffset: true);
@@ -10,6 +13,8 @@ class HomePage extends State<PokemonsList>{
 	List<Pokemons> _pokemons = List<Pokemons>();
 	num skip = 0;
 	bool getting = false;
+	bool filsterOn = false;
+	String filteringType = "";
 	var search = TextEditingController();
 
 	@override
@@ -79,28 +84,81 @@ class HomePage extends State<PokemonsList>{
 		}
 	}
 
+	clearFilter(){
+		_controller.jumpTo(0);
+		Pokemons().getPokemons(0).then((pokemons) => {
+			setState(() => {
+				_pokemons = pokemons,
+				skip = 20,
+				getting = false,
+				filsterOn = false,
+				filteringType = ""
+			})
+		});
+	}
+
+	clearFilterButton() {
+		if( filsterOn == false ){
+			return Container();
+		}else{
+			return new FlatButton.icon(
+				icon: Icon(
+					Icons.clear,
+					color: primaryColor,
+					size: 24.0,
+					semanticLabel: 'Clear filters',
+				),
+				label: Text("Clear filter"),
+				onPressed: () {
+					setState(() => {
+						search.text = "",
+						getting = true,
+						filsterOn = false
+					});
+					clearFilter();
+					FocusScope.of(context).requestFocus(new FocusNode());
+				}
+			);
+		}
+	}
+
 	filterPokemons() {
+		_controller.jumpTo(0);
 		if( getting == false ){
 			setState(() => {
 				getting = true
 			});
 			if( search.text != "" && search.text.length > 3 ){
-				Pokemons().getAllPokemonsFiltered(search.text).then((pokemons) => {
+				Pokemons().getAllPokemonsFiltered(search.text).then((pokemons) {
 					setState(() => {
 						_pokemons = pokemons,
 						skip = 0,
 						getting = false,
-					})
+						filsterOn = true
+					});
 				});
 			}else{
-				Pokemons().getPokemons(0).then((pokemons) => {
-					setState(() => {
-						_pokemons = pokemons,
-						skip = 20,
-						getting = false
-					})
-				});
+				clearFilter();
 			}
+		}
+		FocusScope.of(context).requestFocus(new FocusNode());
+	}
+
+	filterByType(String type){
+		_controller.jumpTo(0);
+		if( getting == false ){
+			setState(() => {
+				getting = true
+			});
+			Pokemons().getAllPokemonsFilteredByType(type).then((pokemons) {
+				setState(() => {
+					_pokemons = pokemons,
+					skip = 0,
+					getting = false,
+					filsterOn = true,
+					filteringType = ": "+type
+				});
+			});
 		}
 	}
 
@@ -136,6 +194,51 @@ class HomePage extends State<PokemonsList>{
 							},
 						)
 					),
+					new Row(
+						mainAxisAlignment: MainAxisAlignment.spaceBetween,
+						children: [
+							new FlatButton.icon(
+								icon: Icon(
+									Icons.filter_none,
+									color: primaryColor,
+									size: 24.0,
+									semanticLabel: 'Filter by type',
+								),
+								label: Text("Filter by type"+filteringType),
+								onPressed: () {
+									List<String> types = [
+										"Normal",
+										"Fire",
+										"Water",
+										"Electric",
+										"Grass",
+										"Ice",
+										"Fighting",
+										"Poison",
+										"Ground",
+										"Flying",
+										"Psychic",
+										"Bug",
+										"Rock",
+										"Ghost",
+										"Dragon",
+										"Steel",
+										"Dark",
+										"Fairy"
+									];
+									SelectDialog.showModal<String>(
+										context,
+										label: "Select type",
+										items: types,
+										onChange: (String selected) {
+											filterByType(selected);
+										},
+									);
+								}
+							),
+							clearFilterButton()
+						],
+					),
 					new Expanded(
 						child: ListView.builder(
 							itemCount: _pokemons.length,
@@ -144,7 +247,7 @@ class HomePage extends State<PokemonsList>{
 						),
 					),
 					new Padding(
-						padding: EdgeInsets.symmetric(horizontal: 0.0, vertical: 8.0),
+						padding: EdgeInsets.fromLTRB(8.0, 0.0, 0.0, 15.0),
 						child: loading()
 					)
 				]

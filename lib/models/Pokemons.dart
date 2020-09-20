@@ -55,4 +55,33 @@ class Pokemons{
 
 		return Future.wait(pokeFiltered.map((model) async => Pokemons.fromJson(await Pokemons().getPokemon(model))));
 	}
+
+	Future<List<Pokemons>> getAllPokemonsFilteredByType(String filter) async{
+		Map types_urls = {
+			"Normal": "https://pokeapi.co/api/v2/type/1/",
+			"Fire": "https://pokeapi.co/api/v2/type/10/",
+			"Water": "https://pokeapi.co/api/v2/type/11/",
+			"Electric": "https://pokeapi.co/api/v2/type/13/",
+			"Grass": "https://pokeapi.co/api/v2/type/12/",
+			"Ice": "https://pokeapi.co/api/v2/type/15/",
+			"Fighting": "https://pokeapi.co/api/v2/type/2/",
+			"Poison": "https://pokeapi.co/api/v2/type/4/",
+			"Ground": "https://pokeapi.co/api/v2/type/5/",
+			"Flying": "https://pokeapi.co/api/v2/type/3/",
+			"Psychic": "https://pokeapi.co/api/v2/type/14/",
+			"Bug": "https://pokeapi.co/api/v2/type/7/",
+			"Rock": "https://pokeapi.co/api/v2/type/6/",
+			"Ghost": "https://pokeapi.co/api/v2/type/8/",
+			"Dragon": "https://pokeapi.co/api/v2/type/16/",
+			"Steel": "https://pokeapi.co/api/v2/type/9/",
+			"Dark": "https://pokeapi.co/api/v2/type/17/",
+			"Fairy": "https://pokeapi.co/api/v2/type/18/"
+		};
+
+		final response = await http.get(types_urls[filter]);
+		final result = json.decode(response.body);
+		Iterable pokemons = result['pokemon'];
+
+		return Future.wait(pokemons.map((model) async	=>Pokemons.fromJson(await Pokemons().getPokemon(model['pokemon']))));
+	}
 }
