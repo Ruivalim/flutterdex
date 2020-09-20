@@ -10,6 +10,7 @@ class HomePage extends State<PokemonsList>{
 	List<Pokemons> _pokemons = List<Pokemons>();
 	num skip = 0;
 	bool getting = false;
+	var search = TextEditingController();
 
 	@override
 	void initState() {
@@ -54,7 +55,7 @@ class HomePage extends State<PokemonsList>{
 						),
 						Image(
 							height: 80,
-							image: NetworkImage(_pokemons[index].pokemon.image),
+							image: _pokemons[index].pokemon.image != null ? NetworkImage(_pokemons[index].pokemon.image) : NetworkImage("https://getgoingabd.com/wp-content/uploads/2020/06/No_Image_Available.jpg"),
 						),
 					],
 				),
@@ -78,6 +79,31 @@ class HomePage extends State<PokemonsList>{
 		}
 	}
 
+	filterPokemons() {
+		if( getting == false ){
+			setState(() => {
+				getting = true
+			});
+			if( search.text != "" && search.text.length > 3 ){
+				Pokemons().getAllPokemonsFiltered(search.text).then((pokemons) => {
+					setState(() => {
+						_pokemons = pokemons,
+						skip = 0,
+						getting = false,
+					})
+				});
+			}else{
+				Pokemons().getPokemons(0).then((pokemons) => {
+					setState(() => {
+						_pokemons = pokemons,
+						skip = 20,
+						getting = false
+					})
+				});
+			}
+		}
+	}
+
 	@override
 	Widget build(BuildContext context){
 		return Scaffold(
@@ -95,10 +121,18 @@ class HomePage extends State<PokemonsList>{
 						padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
 						child: new TextField(
 							decoration: new InputDecoration(
-									hintText: "Search"
+									hintText: "Search",
+									suffixIcon: IconButton(
+										onPressed: filterPokemons,
+										icon: Icon(Icons.search),
+									),
 							),
-							onChanged: (searchValue) {
-								print(searchValue);
+							controller: search,
+							onEditingComplete: filterPokemons,
+							onChanged: (value){
+								if( value == "" ){
+									filterPokemons();
+								}
 							},
 						)
 					),

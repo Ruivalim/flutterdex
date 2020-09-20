@@ -29,7 +29,7 @@ class PokemonPage extends State<PokemonView>{
 					Center(
 						child: Image(
 							height: 300.0,
-							image: NetworkImage(widget.pokemon.image),
+							image: widget.pokemon.image != null ? NetworkImage(widget.pokemon.image) : NetworkImage("https://getgoingabd.com/wp-content/uploads/2020/06/No_Image_Available.jpg"),
 						),
 					)
 				],

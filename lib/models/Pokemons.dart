@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class Pokemon{
@@ -30,8 +31,8 @@ class Pokemons{
 		);
 	}
 
-	Future<Pokemon> getPokemon(url) async{
-		final response = await http.get(url);
+	Future<Pokemon> getPokemon(pokemon) async{
+		final response = await http.get(pokemon['url']);
 		final result = json.decode(response.body);
 
 		return Pokemon.fromJson(result);
@@ -42,6 +43,16 @@ class Pokemons{
 		final result = json.decode(response.body);
 		Iterable pokemons = result['results'];
 
-		return Future.wait(pokemons.map((model) async	=>Pokemons.fromJson(await Pokemons().getPokemon(model['url']))));
+		return Future.wait(pokemons.map((model) async	=>Pokemons.fromJson(await Pokemons().getPokemon(model))));
+	}
+
+	Future<List<Pokemons>> getAllPokemonsFiltered(String filter) async{
+		final response = await http.get("https://pokeapi.co/api/v2/pokemon?limit=2000");
+		final result = json.decode(response.body);
+		Iterable pokemons = result['results'];
+
+		final pokeFiltered = pokemons.where((p) => p['name'].toLowerCase().contains(filter.toLowerCase())).toList();
+
+		return Future.wait(pokeFiltered.map((model) async => Pokemons.fromJson(await Pokemons().getPokemon(model))));
 	}
 }
