@@ -1,21 +1,61 @@
 import 'dart:convert';
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+
+class PokemonData{
+	final num base_happiness;
+	final num capture_rate;
+	final String description;
+	final String evolurionChainUrl;
+
+
+	PokemonData({this.base_happiness, this.capture_rate, this.description, this.evolurionChainUrl});
+
+	factory PokemonData.fromJson(Map<String,dynamic> json){
+		String description;
+
+		for(final txt in json['flavor_text_entries']) {
+			if( txt['language']['name'] == "en" ){
+				description = txt['flavor_text'];
+				break;
+			}
+		};
+
+		return PokemonData(
+			base_happiness: json['base_happiness'],
+			capture_rate: json['capture_rate'],
+			description: description,
+			evolurionChainUrl: json['evolution_chain']['url']
+		);
+	}
+
+	Future<PokemonData> getPokemonData(String pokemon) async{
+		final response = await http.get(pokemon);
+		final result = json.decode(response.body);
+
+		return PokemonData.fromJson(result);
+	}
+}
 
 class Pokemon{
 	final String name;
 	final String image;
 	final List types;
 	final num id;
+	final String speciesUrl;
+	final num height;
+	final num weight;
 
-	Pokemon({this.name, this.image, this.types, this.id});
+	Pokemon({this.name, this.image, this.types, this.id, this.speciesUrl, this.height, this.weight});
 
 	factory Pokemon.fromJson(Map<String,dynamic> json) {
 		return Pokemon(
 			name: json['name'],
 			image: json['sprites']['other']['official-artwork']['front_default'],
 			types: json['types'],
-			id: json['id']
+			id: json['id'],
+			speciesUrl: json['species']['url'],
+			height: json['height'] / 10,
+			weight: json['weight'] / 10
 		);
 	}
 }

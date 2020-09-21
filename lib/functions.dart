@@ -1,11 +1,6 @@
 import 'package:pokedex/constants.dart';
 
-String capitalize(String text) {
-	return "${text[0].toUpperCase()}${text.substring(1)}";
-}
-
-dynamic getTypeColors(List pokeType){
-	Map types_colors = {
+Map types_colors = {
 		"normal": typeNormal,
 		"fire": typeFire,
 		"water": typeWater,
@@ -27,5 +22,22 @@ dynamic getTypeColors(List pokeType){
 		"unknown": typeUnknown
 	};
 
+String capitalize(String text) {
+	return "${text[0].toUpperCase()}${text.substring(1)}";
+}
+
+dynamic getTypeColor(String type){
+	return types_colors[type];
+}
+
+dynamic getTypeColors(List pokeType){
 	return types_colors[pokeType[0]['type']['name']];
+}
+
+String normalize(String text){
+	String removedNl = text.replaceAll("\n", " ");
+	String removedFl = removedNl.replaceAll("\f", " ");
+	String pokeWord = removedFl.replaceAll("POKéMON", "Pokémon");
+
+	return pokeWord;
 }
