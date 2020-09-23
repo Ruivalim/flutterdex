@@ -1,16 +1,26 @@
-# pokedex
+# FlutterDex
 
-A new Flutter project.
+FlutterDex is a Pokedex made with flutter using [PokéApi](https://pokeapi.co) for data fetching.
 
-## Getting Started
+It's good to say that I developed that thinking only for iOS, so maybe you need to do one change or another to run on Android.
 
-This project is a starting point for a Flutter application.
+## Installation
 
-A few resources to get you started if this is your first Flutter project:
+After cloning this repository, use the following command to install the dependencies
+```bash
+flutter pub get
+```
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+See more at [flutter.dev](https://flutter.dev/docs/get-started/install)
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+
+## Usage
+
+You use the command `open -a Simulator` to open an iOs emulator or connect your iPhone, then you use `flutter run` to start searching for your favorite Pokemons.
+
+
+## Contributing
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+
+## License
+[MIT](https://choosealicense.com/licenses/mit/)

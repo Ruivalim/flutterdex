@@ -9,7 +9,7 @@ class MyApp extends StatelessWidget {
 	Widget build(BuildContext context) {
 		return MaterialApp(
 			debugShowCheckedModeBanner: false,
-			title: 'Pokedex',
+			title: 'FlutterDex',
 			theme: ThemeData(
 				scaffoldBackgroundColor: backgroundColor,
 				primaryColor: primaryColor
